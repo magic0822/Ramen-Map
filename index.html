@@ -18,6 +18,7 @@
 <div id="map"></div>
 <script>
     var map;
+    var markers = [];
 
     function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {
@@ -25,19 +26,47 @@
                 zoom: 13
             }
         );
-        var zen6 = {lat: 40.7268239, lng: -73.9871553};
-        var marker = new google.maps.Marker({
-            position: zen6,
-            map: map,
-            title: 'Zen6'
-        });
-        var infoWindow = new google.maps.InfoWindow({
-            content: 'This is a ramen shop'
-        });
-        // add event listener
-        marker.addListener('click', function(){
-            infoWindow.open(map, marker);
-        });
+
+        var locations = [
+        	{title: 'zen6', location: {lat: 40.7268239, lng: -73.9871553}},
+        	{title: 'Minca', location: {lat: 40.7251993, lng: -74.0009182}},
+        	{title: 'Ramen Misoya', location: {lat: 40.7251993, lng: -74.0009182}},
+        	{title: 'Ippudo NY', location: {lat: 40.7251993, lng: -74.0009182}},
+        	{title: 'Ivan Ramen', location: {lat: 40.7251993, lng: -74.0009182}},
+        	{title: 'Ramen Setagaya', location: {lat: 40.7287158, lng: -73.9904578}}
+        ];
+        
+        var largeInfoWindow = new google.maps.InfoWindow();
+        var bounds = new google.maps.LatLngBounds();
+
+        for (var i=0; i<locations.length;i++){
+        	var position = locations[i].location;
+        	var title = locations[i].title;
+        	var marker = new google.maps.Marker({
+        		map: map,
+	            position: position,
+	            title: title,
+	            animation: google.maps.Animation.DROP,
+	            id: i
+        	});
+        	markers.push(marker);
+        	bounds.extend(marker.position);
+        	marker.addListener('click', function(){
+            	populateInfoWindow(this, largeInfowindow)
+        	});
+        }
+        map.fitBounds(bounds);
+
+        function populateInfoWindow(marker, infoWindow){
+        	if(infoWindow.marker != marker){
+        		infoWindow.marker = marker;
+        		infoWindow.setContent('<div>'+marker.title+'</div>');
+        		infoWindow.open(map.marker);
+        		infoWindow.addListener('closeclick', function(){
+        			infoWindow.setMarker(null);
+        		});
+        	}
+        }        
     }
 </script>
 <script async defer
