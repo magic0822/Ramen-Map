@@ -22,7 +22,7 @@
             line-height: 35px;
             padding: 10px 10px 30px 10px;
             text-align: left;
-            width: 350px;
+            width: 100%;
         }
     </style>
 </head>
@@ -33,6 +33,9 @@
         <div>
             <input type="button" id="show-listings" value="Show Listings">
             <input type="button" id="hide-listings" value="Hide Listings">
+            <hr>
+            <span class="text">Draw a shape to search within it for ramen restaurants!</span>
+            <input type="button" id="toggle-drawing" value="Drawing Tools">
         </div>
     </div>
 </div>
@@ -40,11 +43,68 @@
 <script>
     var map;
     var markers = [];
+    var polygon = null;
 
     function initMap() {
+        //create a styles array for this map
+        var styles = [
+            {
+                featureType: 'water',
+                stylers: [
+                    {color: '#19a0d8'}
+                ]
+            },
+            {
+                featureType: 'administrative',
+                elementType: 'labels.text.stroke',
+                stylers: [
+                    {color: '#fff'},
+                    {weight: 6}
+                ]
+            },
+            {
+                featureType: 'administrative',
+                elementType: 'labels.text.fill',
+                stylers: [
+                    {color: '#e85113'}
+                ]
+            },
+            {
+                featureType: 'road.highway',
+                elementType: 'geometry.stroke',
+                stylers: [
+                    {color: '#efe9e4'},
+                    {lightness: -40}
+                ]
+            },
+            {
+                featureType: 'transit.station',
+                stylers: [
+                    {weight: 9},
+                    {hue: '#e85113'}
+                ]
+            },
+            {
+                featureType: 'road.highway',
+                elementType: 'labels.icon',
+                stylers: [
+                    {visibility: 'off'}
+                ]
+            },
+            {
+                featureType: 'road.highway',
+                elementType: 'geometry.fill',
+                stylers: [
+                    {color: '#efe9e4'},
+                    {lightness: -25}
+                ]
+            }
+        ];
         map = new google.maps.Map(document.getElementById('map'), {
                 center: {lat: 40.7413549, lng: -73.9980244},
-                zoom: 13
+                zoom: 13,
+                styles: styles,
+                mapTypeControl: false
             }
         );
 
@@ -58,6 +118,22 @@
         ];
 
         var largeInfoWindow = new google.maps.InfoWindow();
+
+        //init the drawing manager
+        var drawingManager = new google.maps.drawing.DrawingManager({
+            drawingMode: google.maps.drawing.OverlayType.POLYGON,
+            drawingControl: true,
+            drawingControleOptions: {
+                position: google.maps.ControlPosition.TOP_LEFT,
+                drawingModes: [
+                    google.maps.drawing.OverlayType.POLYGON
+                ]
+            }
+        });
+
+        //style the markers
+        var defaultIcon = makeMarkerIcon('0091ff');
+        var highlightdIcon = makeMarkerIcon('FFFF24');
 
         for (var i = 0; i < locations.length; i++) {
             var position = locations[i].location;
@@ -75,20 +151,74 @@
             marker.addListener('click', function () {
                 populateInfoWindow(this, largeInfoWindow)
             });
+            marker.addListener('mouseover', function () {
+                this.setIcon(highlightdIcon);
+            });
+            marker.addListener('mouseout', function () {
+                this.setIcon(defaultIcon);
+            })
         }
 
         document.getElementById('show-listings').addEventListener('click', showListings);
         document.getElementById('hide-listings').addEventListener('click', hideListings);
+        document.getElementById('toggle-drawing').addEventListener('click', function () {
+            toggleDrawing(drawingManager);
+        });
+
+        //capture the polygon
+        drawingManager.addListener('overlaycomplete', function (e) {
+            if(polygon){
+                polygon.setMap(null);
+                hideListings();
+            }
+            //switching drawing mode
+            drawingManager.setDrawingMode(null);
+            // create a new editable polygon
+            polygon = e.overlay();
+            polygon.setEditable(true);
+            // searching within the polygon
+            searchWithinPolygon();
+
+        });
 
         //populate the infowindow when the marker is clicked
         function populateInfoWindow(marker, infoWindow) {
             if (infoWindow.marker != marker) {
+                infoWindow.setContent('');
                 infoWindow.marker = marker;
-                infoWindow.setContent('<div>' + marker.title + '</div>');
-                infoWindow.open(map, marker);
                 infoWindow.addListener('closeclick', function () {
-                    infoWindow.setMarker(null);
+                    infoWindow.marker = null;
                 });
+                //get street view for markers
+                var streetViewService = new google.maps.StreetViewService();
+                var radius = 50;
+
+                function getStreetView(data, status) {
+                    if (status == google.maps.StreetViewStatus.OK) {
+                        var nearStreetViewLocation = data.location.latLng;
+                        var heading = google.maps.geometry.spherical.computeHeading(
+                            nearStreetViewLocation, marker.position);
+                        infoWindow.setContent('<div>' + marker.title + '</div><div id="pano"></div>');
+                        var panoramaOptions = {
+                            position: nearStreetViewLocation,
+                            pov: {
+                                heading: heading,
+                                pitch: 30
+                            }
+                        };
+                        var panorama = new google.maps.StreetViewPanorama(
+                            document.getElementById('pano'), panoramaOptions);
+                    } else {
+                        infowindow.setContent('<div>' + marker.title + '</div>' +
+                            '<div>No Street View Found</div>');
+                    }
+                }
+
+                // Use streetview service to get the closest streetview image within
+                // 50 meters of the markers position
+                streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
+                // Open the infowindow on the correct marker.
+                infoWindow.open(map, marker);
             }
         }
 
@@ -106,10 +236,29 @@
                 markers[i].setMap(null);
             }
         }
+
+        function makeMarkerIcon(markerColor) {
+            var markerImage = new google.maps.MarkerImage(
+                'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor +
+                '|40|_|%E2%80%A2',
+                new google.maps.Size(21, 34),
+                new google.maps.Point(0, 0),
+                new google.maps.Point(10, 34),
+                new google.maps.Size(21, 34));
+            return markerImage;
+        }
+
+        function toggleDrawing(drawingManager) {
+            if(drawingManager.map) {
+                drawingManager.setMap(null);
+            } else {
+                drawingManager.setMap(map);
+            }
+        }
     }
 </script>
 <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBxpJ86YoI0gBJwpbUg68k1L3TLYZKApsg&callback=initMap">
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBxpJ86YoI0gBJwpbUg68k1L3TLYZKApsg&libraries=drawing,geometry&v=3&callback=initMap">
 </script>
 </body>
 </html>
