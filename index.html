@@ -100,6 +100,7 @@
                 ]
             }
         ];
+        
         map = new google.maps.Map(document.getElementById('map'), {
                 center: {lat: 40.7413549, lng: -73.9980244},
                 zoom: 13,
@@ -134,7 +135,7 @@
         //style the markers
         var defaultIcon = makeMarkerIcon('0091ff');
         var highlightdIcon = makeMarkerIcon('FFFF24');
-
+        //loop the locations
         for (var i = 0; i < locations.length; i++) {
             var position = locations[i].location;
             var title = locations[i].title;
