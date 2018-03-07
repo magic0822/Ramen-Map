@@ -13,18 +13,6 @@ function initMap() {
 
     var largeInfoWindow = new google.maps.InfoWindow();
 
-    //init the drawing manager
-    // var drawingManager = new google.maps.drawing.DrawingManager({
-    //     drawingMode: google.maps.drawing.OverlayType.POLYGON,
-    //     drawingControl: true,
-    //     drawingControleOptions: {
-    //         position: google.maps.ControlPosition.TOP_LEFT,
-    //         drawingModes: [
-    //             google.maps.drawing.OverlayType.POLYGON
-    //         ]
-    //     }
-    // });
-
     //style the markers
     var defaultIcon = makeMarkerIcon('0091ff');
     var highlightdIcon = makeMarkerIcon('FFFF24');
@@ -56,25 +44,6 @@ function initMap() {
     //get obj
     document.getElementById('show-listings').addEventListener('click', showListings);
     document.getElementById('hide-listings').addEventListener('click', hideListings);
-    // document.getElementById('toggle-drawing').addEventListener('click', function () {
-    //     toggleDrawing(drawingManager);
-    // });
-
-    //capture the polygon
-    // drawingManager.addListener('overlaycomplete', function (e) {
-    //     if (polygon) {
-    //         polygon.setMap(null);
-    //         hideListings();
-    //     }
-    //     //switching drawing mode
-    //     drawingManager.setDrawingMode(null);
-    //     // create a new editable polygon
-    //     polygon = e.overlay();
-    //     polygon.setEditable(true);
-    //     // searching within the polygon
-    //     searchWithinPolygon();
-    //
-    // });
 
     //populate the infowindow when the marker is clicked
     function populateInfoWindow(marker, infoWindow) {
@@ -142,13 +111,5 @@ function initMap() {
             new google.maps.Size(21, 34));
         return markerImage;
     }
-
-    // function toggleDrawing(drawingManager) {
-    //     if (drawingManager.map) {
-    //         drawingManager.setMap(null);
-    //     } else {
-    //         drawingManager.setMap(map);
-    //     }
-    // }
 }
 
