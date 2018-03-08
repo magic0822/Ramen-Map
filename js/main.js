@@ -12,33 +12,20 @@ function initMap() {
     );
 
     var largeInfoWindow = new google.maps.InfoWindow();
+    ko.applyBindings(new ViewModel());
 
-    //style the markers
-    var defaultIcon = makeMarkerIcon('0091ff');
-    var highlightdIcon = makeMarkerIcon('FFFF24');
-    //loop the locations
-    for (var i = 0; i < locations.length; i++) {
-        var position = locations[i].location;
-        var title = locations[i].title;
-        //create marker per location
-        var marker = new google.maps.Marker({
-            position: position,
-            title: title,
-            animation: google.maps.Animation.DROP,
-            id: i
+    }
+
+    function ViewModel() {
+        var self = this;
+        this.locations = ko.observableArray([]);
+        locationList.forEach(function (location) {
+            self.locations.push(new Location(location))
         });
-        //put the marker in markers array
-        markers.push(marker);
-        //click event to open infowindow at each marker
-        marker.addListener('click', function () {
-            populateInfoWindow(this, largeInfoWindow)
-        });
-        marker.addListener('mouseover', function () {
-            this.setIcon(highlightdIcon);
-        });
-        marker.addListener('mouseout', function () {
-            this.setIcon(defaultIcon);
-        })
+    }
+
+    function errorHandler() {
+        alert("Unknown error, please try again.");
     }
 
     //get obj
