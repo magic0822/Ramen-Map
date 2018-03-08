@@ -1,4 +1,4 @@
-var locations = [
+var locationList = [
         {title: 'zen6', location: {lat: 40.7268239, lng: -73.9871553}},
         {title: 'Minca', location: {lat: 40.723998, lng: -73.9851377}},
         {title: 'Ramen Misoya', location: {lat: 40.728511, lng: -73.9903287}},
