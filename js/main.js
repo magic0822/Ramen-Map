@@ -16,8 +16,8 @@ var foursquareLink = 'https://api.foursquare.com/v2/venues/explore' + '&client_i
 
 //push data to location array
 var defaultList = function (location) {
-    var i = 0;
-    for (i = 0; i < location.length; i++) {
+    var i = 0, locLen = location.length;
+    for (i = 0; i < locLen; i++) {
         pointsArr.push(location[i].name);
         latArr.push(location[i].lat);
         lngArr.push(location[i].lng);
@@ -65,7 +65,7 @@ var foursquareList = function () {
 
 };
 
-var koLocationEntry = function (data) {
+var userInput = function (data) {
     this.name = data;
 };
 
@@ -79,7 +79,7 @@ var ViewModel = function () {
 
     for (i = 0; i < pointsArr.length; i++) {
         {
-            self.defaultListItems.push(new koLocationEntry(pointsArr[i]));
+            self.defaultListItems.push(new userInput(pointsArr[i]));
         }
     }
 
@@ -93,7 +93,7 @@ var ViewModel = function () {
 
         for (i = 0; i < pointsArr.length; i++) {
             if (pointsArr[i].toLowerCase().indexOf(data) >= 0) {
-                self.defaultKoList.push(new koLocationEntry(pointsArr[i]));
+                self.defaultKoList.push(new userInput(pointsArr[i]));
                 markers[i].setVisible(true);
             }
             else {
