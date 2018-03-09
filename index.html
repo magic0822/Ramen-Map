@@ -3,27 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>maps</title>
-    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
 </head>
 <body>
 <div class="container">
-    <div class="options-box">
-        <h1>Get a great Ramen Place</h1>
+    <h1>Get a great Ramen Place</h1>
+</div>
+<div class="container">
+    <div class="col">
+        <input type="text" placeholder="Search">
+    </div>
+    <div class="col">
         <div>
-            <input type="button" id="show-listings" value="Show Listings">
-            <input type="button" id="hide-listings" value="Hide Listings">
-            <ul data-bind="foreach: Locations">
-                <li data-bind="text: title"></li>
-            </ul>
+            <a href="#"></a>
         </div>
+        <div class="col" id="map"></div>
     </div>
 </div>
-<div id="map"></div>
-<script src="./js/main.js"></script>
-<script src="./js/static.js"></script>
-<script src="./js/libs/knockout-3.4.2.js"></script>
+
+<script src="js/main.js"></script>
+<script src="js/static.js"></script>
+<script src="js/libs/knockout-3.4.2.js"></script>
+<script src="js/libs/jquery-3.3.1.min.js"></script>
+<script src="js/libs/bootstrap.min.js"></script>
 <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBxpJ86YoI0gBJwpbUg68k1L3TLYZKApsg&libraries=drawing,geometry&v=3&callback=initMap">
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBxpJ86YoI0gBJwpbUg68k1L3TLYZKApsg&libraries=geometry&v=3&callback=initMap">
 </script>
 </body>
 </html>
