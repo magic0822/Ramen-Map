@@ -7,18 +7,24 @@
     <link rel="stylesheet" href="css/bootstrap.min.css">
 </head>
 <body>
-<div class="container">
-    <h1>Get a great Ramen Place</h1>
-</div>
-<div class="container">
-    <div class="col">
-        <input type="text" placeholder="Search">
-    </div>
-    <div class="col">
-        <div>
-            <a href="#"></a>
+<div class="row">
+    <h2 id="maintitle">Ramen Map in NYC</h2>
+    <div class="col-md-12" id="container">
+        <div class="input-group col-md-12" id="custom-search-input">
+            <input type="text" class="  search-query form-control"
+                   placeholder="Search"
+                   data-bind="textInput: query,
+							event: {keyup: search}" autocomplete="on"/>
         </div>
-        <div class="col" id="map"></div>
+        <div class="col-md-12" id="bodycontainer">
+            <div class="list-group" id="searchlist">
+                <div data-bind="foreach: defaultKoList" class="list-group">
+                    <a href="#" class="list-group-item" data-bind="text: name, click: $parent.listClickAction"></a>
+
+                </div>
+            </div>
+            <div class="map col-md-8" id="map"></div>
+        </div>
     </div>
 </div>
 
