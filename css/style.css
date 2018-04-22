@@ -1,0 +1,53 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.mainContainer {
+    background-color: cadetblue;
+}
+
+.titleBox {
+    height: 150px;
+    width: 100%;
+    padding: 8%;
+}
+
+.title {
+    text-align: center;
+}
+
+.map {
+    height: 688px;
+    width: 50%;
+    padding: 2%;
+    margin-left: 4%;
+    border-style: none;
+    border-radius: 5px;
+}
+
+.container {
+    height: 100%;
+    padding: 3%;
+}
+
+.bodyContainer {
+    height: 100%;
+    padding-top: 1.5%;
+    display: flex;
+}
+
+.searchList {
+    padding-left: 3%;
+    width: 30%;
+}
+
+.searchBar button {
+    background: none;
+    border: 0;
+    padding: 1.5% 3%;
+    margin-top: 2%;
+    position: relative;
+    left: -30px;
+    color: #0099CC;
+}
